@@ -31,14 +31,14 @@ namespace App
 			rootNavigationController.NavigationBar.TintColor = UIColor.White;
 			rootNavigationController.NavigationBar.BackgroundColor = UIColor.White;
 			rootNavigationController.NavigationBar.SetTitleTextAttributes (new UITextAttributes{ TextColor = UIColor.White });
-			rootNavigationController.NavigationBar.Translucent = false;
-			rootNavigationController.NavigationBar.BarStyle = UIBarStyle.Black;
+			/*rootNavigationController.NavigationBar.Translucent = false;
+			rootNavigationController.NavigationBar.BarStyle = UIBarStyle.Black;*/
 
 			viewController = new AppViewController ();
 			rootNavigationController.PushViewController (viewController, false);
 			window.RootViewController = rootNavigationController;
 
-			rootNavigationController.SetNavigationBarHidden (true, true);
+			//rootNavigationController.SetNavigationBarHidden (true, true);
 
 			window.MakeKeyAndVisible ();
 			
