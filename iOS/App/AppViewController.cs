@@ -21,6 +21,8 @@ namespace App
 		AVCaptureMetadataOutput metadataOutput;
 		private int counter;
 
+		AVCaptureVideoPreviewLayer previewLayer;
+
 		public AppViewController () : base ("AppViewController", null)
 		{
 			Title = _baseTitle;
@@ -52,13 +54,6 @@ namespace App
 			// Perform any additional setup after loading the view, typically from a nib.
 		}
 
-		private void ResetNavigation ()
-		{
-			Title = _baseTitle;
-			NavigationItem.SetLeftBarButtonItem (null, true);
-			NavigationController.SetNavigationBarHidden (true, true);
-		}
-
 		private void HandleJSCall (string url)
 		{
 			var jsCall = new JSCallCommand (url);
@@ -69,6 +64,13 @@ namespace App
 			}
 			if (jsCall.Command == CommandType.Scan) {
 
+				this.NavigationItem.SetRightBarButtonItem(
+					new UIBarButtonItem(UIBarButtonSystemItem.Cancel, (sender,args) => {
+						previewLayer.RemoveFromSuperLayer();
+						this.NavigationItem.RightBarButtonItem = null;
+						session.StopRunning();
+					})
+					, true);
 
 				StartScan (result => {
 					_webView.EvaluateJavascript(string.Format("{0}('{1}');", jsCall.Options, result));
@@ -86,7 +88,7 @@ namespace App
 
 		private bool ShouldLoad (UIWebView webView, NSUrlRequest request, UIWebViewNavigationType navigationType)
 		{
-			ResetNavigation ();
+
 
 			if (request.Url.Scheme == "js-call") {
 				HandleJSCall (request.Url.AbsoluteString);
@@ -97,7 +99,7 @@ namespace App
 				var fileName = Path.GetFileName (request.Url.AbsoluteString);
 				NavigationController.SetNavigationBarHidden (false, true);
 				Title = fileName;
-				NavigationItem.SetLeftBarButtonItem(new UIBarButtonItem ("< Back", UIBarButtonItemStyle.Plain, (sender, args) => {
+				NavigationItem.SetLeftBarButtonItem(new UIBarButtonItem ("Back", UIBarButtonItemStyle.Plain, (sender, args) => {
 					_webView.GoBack();
 				}), true); 
 			}
@@ -131,7 +133,7 @@ namespace App
 				AVMetadataObject.TypeCode93Code
 			};
 
-			AVCaptureVideoPreviewLayer previewLayer = new AVCaptureVideoPreviewLayer (session);
+			previewLayer = new AVCaptureVideoPreviewLayer (session);
 			previewLayer.Frame = new RectangleF (0, 0, View.Frame.Size.Width, View.Frame.Size.Height);
 			previewLayer.VideoGravity = AVLayerVideoGravity.ResizeAspectFill.ToString ();
 			View.Layer.AddSublayer (previewLayer);
@@ -146,8 +148,9 @@ namespace App
 
 				session.StopRunning ();
 				previewLayer.RemoveFromSuperLayer();
+				this.NavigationItem.RightBarButtonItem = null;
 				callback (result);
-				counter = 0;
+
 			};
 		}
 
