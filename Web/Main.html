@@ -73,7 +73,7 @@
     <script>
     	var api = {};
     	api.isHybrid = false;
-		api.scanComplete = function() {};
+		api.scanComplete = function(result) {};
 		api.scan = function(callback) {
 			if(api.isHybrid){
 				window.location = 'js-call:scan';
