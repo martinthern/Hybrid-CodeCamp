@@ -44,6 +44,9 @@ namespace App
 			string localHtmlUrl = Path.Combine (NSBundle.MainBundle.BundlePath, fileName);
 			_webView.LoadRequest (new NSUrlRequest (new NSUrl (localHtmlUrl, false)));
 
+			_webView.LoadFinished += (object sender, EventArgs e) => {
+				_webView.EvaluateJavascript("api.isHybrid = true");
+			};
 			_webView.ShouldStartLoad = ShouldLoad;
 
 			// Perform any additional setup after loading the view, typically from a nib.
@@ -60,7 +63,7 @@ namespace App
 		{
 			var jsCall = new JSCallCommand (url);
 
-			if (jsCall.Command == CommandType.Alert) {
+			if (jsCall.Command == CommandType.Popup) {
 				new UIAlertView ("Alert", jsCall.Options, null, "OK").Show();
 				return;
 			}
@@ -208,7 +211,7 @@ namespace App
 	}
 	public class CommandType
 	{
-		public const string Alert = "alert";
+		public const string Popup = "popup";
 		public const string Scan = "scan";
 	}
 }

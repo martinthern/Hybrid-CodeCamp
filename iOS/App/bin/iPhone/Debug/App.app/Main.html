@@ -64,22 +64,25 @@
       </p>
 
       <hr/>
+
+      <p>
+      	Is in hybrid mode: <span id="isHybridMode"></span>
+      </p>
     </div>
 
     <script>
     	var api = {};
-
-  			api.scan = function(callback) {
-	         	window.location = 'js-call:scan';
-	         	api.scanComplete = callback;
-	          };
-	        api.popup = function(text) {
-	            window.location = 'js-call:alert?' + encodeURIComponent(text);
-	          };
+    	api.isHybrid = false;
+		api.scanComplete = function() {};
+		api.scan = function(callback) {
+         	window.location = 'js-call:scan';
+         	api.scanComplete = callback;
+          };
+        api.popup = function(text) {
+            window.location = 'js-call:popup?' + encodeURIComponent(text);
+          };
 
   		$(function() {
-
-
 			$('#btnPopup').click(function() {
           		api.popup($('#txtAlert').val());
 			});
@@ -89,6 +92,7 @@
             		$('#result').html(result);
           		});
 			});
+			window.setTimeout("$('#isHybridMode').text(api.isHybrid)", 500);
 		});
 		</script>
 	</body>
