@@ -51,8 +51,10 @@ namespace App
 			View.AddSubview (_webView);
 			string fileName = "Main.html";
 			string localHtmlUrl = Path.Combine (NSBundle.MainBundle.BundlePath, fileName);
-			_webView.LoadRequest (new NSUrlRequest (new NSUrl (localHtmlUrl, false)));
-
+			_webView.LoadRequest (new NSUrlRequest (new NSUrl ("http://powerful-castle-9018.herokuapp.com/")));
+			_webView.LoadError += (object sender, UIWebErrorArgs e) => {
+				Console.WriteLine(e.ToString());
+			};
 			_webView.LoadFinished += (object sender, EventArgs e) => {
 				_webView.EvaluateJavascript("api.isHybrid = true");
 			};
