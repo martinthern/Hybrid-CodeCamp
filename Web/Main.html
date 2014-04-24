@@ -13,6 +13,9 @@
         margin-right: 10px;
         font-weight: 300;
       }
+		.topspace {
+			margin-top: 10px;
+		}
     </style>
 	</head>
 	<body>
@@ -36,6 +39,7 @@
       <p>
         <span class="badge">2</span>
         <input type="button" class="btn btn-primary" id="btnPopup" value="Open native popup/alert" />
+        <input type="text" class="form-control topspace" id="txtAlert" />
       </p>
 
       <hr/>
@@ -63,27 +67,29 @@
     </div>
 
     <script>
-		  $(function() {
-        var api = {
-          scan: function(callback) {
-            var result = "result";
-            callback(result);
-          },
-          popup: function() {
-            alert('show native popup');
-          }
-        };
+    	var api = {};
 
-				$('#btnPopup').click(function() {
-          api.popup();
-				});
+  			api.scan = function(callback) {
+	         	window.location = 'js-call:scan';
+	         	api.scanComplete = callback;
+	          };
+	        api.popup = function(text) {
+	            window.location = 'js-call:alert?' + encodeURIComponent(text);
+	          };
 
-				$('#btnScan').click(function() {
-          api.scan(function(result) {
-            $('#result').html(result);
-          });
-				});
+  		$(function() {
+
+
+			$('#btnPopup').click(function() {
+          		api.popup($('#txtAlert').val());
 			});
+
+			$('#btnScan').click(function() {
+          		api.scan(function(result) {
+            		$('#result').html(result);
+          		});
+			});
+		});
 		</script>
 	</body>
 </html>
