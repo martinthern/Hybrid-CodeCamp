@@ -118,7 +118,7 @@ namespace Hybrid
 				if (result != null) 
 				{
 					//Console.WriteLine("Scanned Barcode: " + result);
-					webView.LoadUrl("JavaScript:scanComplete('" + result + "')"); 
+					webView.LoadUrl("javascript:api.scanComplete('" + result + "');"); 
 				}
 			}
 		}
