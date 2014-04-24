@@ -93,9 +93,6 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Default-568h%402x.png" />
-    <BundleResource Include="..\..\Web\.DS_Store">
-      <Link>Resources\.DS_Store</Link>
-    </BundleResource>
     <BundleResource Include="..\..\Web\Main.html">
       <Link>Resources\Main.html</Link>
     </BundleResource>

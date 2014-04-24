@@ -71,37 +71,36 @@
     </div>
 
     <script>
-    	var api = {};
-    	api.isHybrid = false;
-		api.scanComplete = function() {};
-		api.scan = function(callback) {
-			if(api.isHybrid){
-				window.location = 'js-call:scan';
-         		api.scanComplete = callback;
-			} 
-			else {
-				alert('Scan only possible in hybrid mode.');
-			}
-
-          };
-        api.popup = function(text) {
-			if(api.isHybrid) {
-				window.location = 'js-call:popup?' + encodeURIComponent(text);
-			}
-            else {
-            	alert(text);
-            }
-          };
-
+    	var api = {
+			isHybrid: false,
+    		scan: function() {
+				if(api.isHybrid){
+					window.location = 'js-call:scan?scanCompleted';
+				} 
+				else {
+					alert('Scan only possible in hybrid mode.');
+				}
+    		},
+    		popup: function(text) {
+				if(api.isHybrid) {
+					window.location = 'js-call:popup?' + encodeURIComponent(text);
+				}
+	            else {
+	            	alert(text);
+	            }
+          	}
+  		},
+		scanCompleted = function (result) {
+			$('#result').html(result);
+		};
+    	
   		$(function() {
 			$('#btnPopup').click(function() {
           		api.popup($('#txtAlert').val());
 			});
 
 			$('#btnScan').click(function() {
-          		api.scan(function(result) {
-            		$('#result').html(result);
-          		});
+          		api.scan();
 			});
 			window.setTimeout("$('#isHybridMode').text(api.isHybrid)", 500);
 		});

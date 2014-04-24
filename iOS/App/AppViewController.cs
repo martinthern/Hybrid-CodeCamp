@@ -68,8 +68,10 @@ namespace App
 				return;
 			}
 			if (jsCall.Command == CommandType.Scan) {
+
+
 				StartScan (result => {
-					_webView.EvaluateJavascript(string.Format("api.scanComplete('{0}');", result));
+					_webView.EvaluateJavascript(string.Format("{0}('{1}');", jsCall.Options, result));
 				});
 			}
 
@@ -164,23 +166,14 @@ namespace App
 				string code = "";
 
 				foreach (var metadata in metadataObjects) {
-					if (metadata.Type == AVMetadataObject.TypeQRCode) {
-						code = ((AVMetadataMachineReadableCodeObject)metadata).StringValue;
-						Console.WriteLine ("qrcode: " + code);
-					} else if (metadata.Type == AVMetadataObject.TypeEAN13Code) {
-						code = ((AVMetadataMachineReadableCodeObject)metadata).StringValue;
-						Console.WriteLine ("ean13code: " + code); 
-					} else if (metadata.Type == AVMetadataObject.TypeEAN8Code) {
-						code = ((AVMetadataMachineReadableCodeObject)metadata).StringValue;
-						Console.WriteLine ("ean8code: " + code); 
-					} else if (metadata.Type == AVMetadataObject.TypeCode128Code) {
-						code = ((AVMetadataMachineReadableCodeObject)metadata).StringValue;
-						Console.WriteLine ("code128: " + code); 
-					} else {
-						Console.WriteLine ("type: " + metadata.Type);
-						code = ((AVMetadataMachineReadableCodeObject)metadata).StringValue;
-						Console.WriteLine ("----: " + code);
+					var instance = metadata as AVMetadataMachineReadableCodeObject;
+
+					if (instance == null) {
+						Console.WriteLine ("Skipping: " + metadata);
+						continue;
 					}
+
+					code = instance.StringValue;
 				}
 
 				if (_parent.QrScan != null && !string.IsNullOrEmpty (code)) {
@@ -206,8 +199,6 @@ namespace App
 
 		public string Command { get; set; }
 		public string Options { get; set; }
-
-
 	}
 	public class CommandType
 	{
