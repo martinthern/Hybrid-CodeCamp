@@ -65,8 +65,9 @@
     <script>
 		  $(function() {
         var api = {
-          scan: function() {
-            alert('show barcode scanner');
+          scan: function(callback) {
+            var result = "result";
+            callback(result);
           },
           popup: function() {
             alert('show native popup');
@@ -78,7 +79,9 @@
 				});
 
 				$('#btnScan').click(function() {
-          api.scan();
+          api.scan(function(result) {
+            $('#result').html(result);
+          });
 				});
 			});
 		</script>
