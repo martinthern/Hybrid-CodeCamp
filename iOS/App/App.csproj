@@ -93,24 +93,6 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Default-568h%402x.png" />
-    <BundleResource Include="..\..\Web\Main.html">
-      <Link>Resources\Main.html</Link>
-    </BundleResource>
-    <BundleResource Include="..\..\Web\Second.html">
-      <Link>Resources\Second.html</Link>
-    </BundleResource>
-    <BundleResource Include="..\..\Web\bootstrap-theme.css">
-      <Link>Resources\bootstrap-theme.css</Link>
-    </BundleResource>
-    <BundleResource Include="..\..\Web\bootstrap.css">
-      <Link>Resources\bootstrap.css</Link>
-    </BundleResource>
-    <BundleResource Include="..\..\Web\document.pdf">
-      <Link>Resources\document.pdf</Link>
-    </BundleResource>
-    <BundleResource Include="..\..\Web\jquery-1.11.0.min.js">
-      <Link>Resources\jquery-1.11.0.min.js</Link>
-    </BundleResource>
     <BundleResource Include="Resources\Icon-60%402x.png" />
   </ItemGroup>
   <ItemGroup>

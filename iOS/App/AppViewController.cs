@@ -36,6 +36,13 @@ namespace App
 			// Release any cached data, images, etc that aren't in use.
 		}
 
+		private void ResetNavigation()
+		{
+			NavigationItem.SetLeftBarButtonItem (null, true);
+			NavigationItem.SetRightBarButtonItem (null, true);
+			_webView.ScrollView.UserInteractionEnabled = true;
+		}
+
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
@@ -44,8 +51,10 @@ namespace App
 			View.AddSubview (_webView);
 			string fileName = "Main.html";
 			string localHtmlUrl = Path.Combine (NSBundle.MainBundle.BundlePath, fileName);
-			_webView.LoadRequest (new NSUrlRequest (new NSUrl (localHtmlUrl, false)));
-
+			_webView.LoadRequest (new NSUrlRequest (new NSUrl ("http://powerful-castle-9018.herokuapp.com/")));
+			_webView.LoadError += (object sender, UIWebErrorArgs e) => {
+				Console.WriteLine(e.ToString());
+			};
 			_webView.LoadFinished += (object sender, EventArgs e) => {
 				_webView.EvaluateJavascript("api.isHybrid = true");
 			};
@@ -67,7 +76,7 @@ namespace App
 				this.NavigationItem.SetRightBarButtonItem(
 					new UIBarButtonItem(UIBarButtonSystemItem.Cancel, (sender,args) => {
 						previewLayer.RemoveFromSuperLayer();
-						this.NavigationItem.RightBarButtonItem = null;
+						ResetNavigation();
 						session.StopRunning();
 					})
 					, true);
@@ -83,12 +92,13 @@ namespace App
 		{
 			base.ViewWillAppear (animated);
 
+			_webView.Frame = View.Bounds;
 			counter = 0;
 		}
 
 		private bool ShouldLoad (UIWebView webView, NSUrlRequest request, UIWebViewNavigationType navigationType)
 		{
-
+			ResetNavigation ();
 
 			if (request.Url.Scheme == "js-call") {
 				HandleJSCall (request.Url.AbsoluteString);
@@ -97,7 +107,6 @@ namespace App
 
 			if (request.Url.AbsoluteString.EndsWith(".pdf")) {
 				var fileName = Path.GetFileName (request.Url.AbsoluteString);
-				NavigationController.SetNavigationBarHidden (false, true);
 				Title = fileName;
 				NavigationItem.SetLeftBarButtonItem(new UIBarButtonItem ("Back", UIBarButtonItemStyle.Plain, (sender, args) => {
 					_webView.GoBack();
@@ -109,6 +118,8 @@ namespace App
 
 		private void StartScan (Action<string> callback)
 		{
+			_webView.ScrollView.UserInteractionEnabled = false;
+
 			session = new AVCaptureSession ();
 			var camera = AVCaptureDevice.DefaultDeviceWithMediaType (AVMediaType.Video);
 			var input = AVCaptureDeviceInput.FromDevice (camera);
@@ -147,6 +158,7 @@ namespace App
 				counter++;
 
 				session.StopRunning ();
+				_webView.ScrollView.UserInteractionEnabled = true;
 				previewLayer.RemoveFromSuperLayer();
 				this.NavigationItem.RightBarButtonItem = null;
 				callback (result);
