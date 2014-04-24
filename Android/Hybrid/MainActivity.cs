@@ -39,8 +39,8 @@ namespace Hybrid
 
 			public override bool ShouldOverrideUrlLoading (WebView webView, string url)
 			{
-				if (url.EndsWith (".pdf")) {
-					DisplaydPdf (url);
+				if (url.EndsWith (".pdf") && !url.Contains("://docs.google.com")) {
+					DisplaydPdf (url, webView);
 					return true;
 				}
 
@@ -96,12 +96,14 @@ namespace Hybrid
 				}
 			}
 
-			private void DisplaydPdf(string uri)
+			private void DisplaydPdf(string uri, WebView webView)
 			{
-				var intent = new Intent(Intent.ActionView);
-				intent.SetDataAndType(uri, "application/pdf");
-				intent.SetFlags(ActivityFlags.ClearTop);
-				StartActivity(intent);
+				//var intent = new Intent(Intent.ActionView);
+				//intent.SetPackage ("com.adobe.reader");
+//				intent.SetDataAndType(Android.Net.Uri.Parse(uri), "application/pdf");
+//				intent.SetFlags(ActivityFlags.ClearTop);
+//				_context.StartActivity(intent);
+				webView.LoadUrl("http://docs.google.com/gview?embedded=true&url=" + uri);
 			}
 		}
 	}
