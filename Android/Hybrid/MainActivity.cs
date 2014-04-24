@@ -6,6 +6,7 @@ using Android.Views;
 using Android.Webkit;
 using Android.Widget;
 using Android.OS;
+using ZXing.Mobile;
 
 namespace Hybrid
 {
@@ -18,6 +19,8 @@ namespace Hybrid
 
 			// Set our view from the "main" layout resource
 			SetContentView (Resource.Layout.Main);
+			//SetContentView (Resource.Layout.Scanner);
+			//TestScanner ();
 
 			var webView = FindViewById<WebView> (Resource.Id.webView);
 			webView.Settings.JavaScriptEnabled = true;
@@ -27,16 +30,29 @@ namespace Hybrid
 
 			webView.LoadUrl("file:///android_asset/Web/Main.html");
 
-			// Render the view from the type generated from RazorView.cshtml
-			//var model = new Model1 () { Text = "Text goes here" };
-			//var template = new RazorView () { Model = model };
-			//var page = template.GenerateString ();
+		}
 
+		private void TestScanner()
+		{
+			//Create a new instance of our Scanner
+			var scanner = new MobileBarcodeScanner(this);
 
-			// Load the rendered HTML into the view with a base URL 
-			// that points to the root of the bundled Assets folder
-			//webView.LoadDataWithBaseURL ("file:///android_asset/", page, "text/html", "UTF-8", null);
+			var buttonScanDefaultView = this.FindViewById<Button>(Resource.Id.buttonScanDefaultView);
+			buttonScanDefaultView.Click += async delegate {
 
+				//Tell our scanner to use the default overlay
+				scanner.UseCustomOverlay = false;
+
+				//We can customize the top and bottom text of the default overlay
+				scanner.TopText = "Hold the camera up to the barcode\nAbout 6 inches away";
+				scanner.BottomText = "Wait for the barcode to automatically scan!";
+
+				//Start scanning
+				var result = await scanner.Scan();
+
+				if (result != null)
+					Console.WriteLine("Scanned Barcode: " + result.Text);
+			};
 		}
 
 		private class HybridWebViewClient : WebViewClient
@@ -50,7 +66,6 @@ namespace Hybrid
 
 			public override bool ShouldOverrideUrlLoading (WebView webView, string url)
 			{
-
 				// If the URL is not our own custom scheme, just let the webView load the URL as usual
 				var scheme = "js-call:";
 
@@ -63,14 +78,20 @@ namespace Hybrid
 				var method = resources [0];
 				var parameters = resources.Length > 1 ? System.Web.HttpUtility.ParseQueryString (resources [1]) : null;
 
-				if (method == "popup") {
-					ShowPopup ();
+				switch (method) 
+				{
+				case "popup":
+					ShowPopup (webView);
+					break;
+				case "scan":
+					Scan (webView);
+					break;
 				}
-
+			
 				return true;
 			}
 
-			private void ShowPopup()
+			private void ShowPopup(WebView webView)
 			{
 				var builder = new AlertDialog.Builder (_context);
 				builder.SetTitle ("Alert!");
@@ -78,7 +99,27 @@ namespace Hybrid
 				builder.SetNeutralButton ("OK!", (senderAlert, args) => {});
 
 				var alert = builder.Create ();
-				alert.Show ();	
+				webView.Post (() => alert.Show ());
+			}
+
+			private void Scan(WebView webView)
+			{
+				var scanner = new MobileBarcodeScanner(_context);
+				scanner.UseCustomOverlay = false;
+				scanner.TopText = "Hold the camera up to the barcode\nAbout 6 inches away";
+				scanner.BottomText = "Wait for the barcode to automatically scan!";
+		
+				var resultTask = scanner.Scan();
+				resultTask.ContinueWith (result => RenderResult(result.Result.Text, webView));
+			}
+
+			private void RenderResult(string result, WebView webView)
+			{
+				if (result != null) 
+				{
+					//Console.WriteLine("Scanned Barcode: " + result);
+					webView.LoadUrl("JavaScript:scanComplete('" + result + "')"); 
+				}
 			}
 		}
 	}
