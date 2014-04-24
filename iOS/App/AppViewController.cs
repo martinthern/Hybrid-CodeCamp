@@ -36,6 +36,13 @@ namespace App
 			// Release any cached data, images, etc that aren't in use.
 		}
 
+		private void ResetNavigation()
+		{
+			NavigationItem.SetLeftBarButtonItem (null, true);
+			NavigationItem.SetRightBarButtonItem (null, true);
+			_webView.ScrollView.UserInteractionEnabled = true;
+		}
+
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
@@ -67,7 +74,7 @@ namespace App
 				this.NavigationItem.SetRightBarButtonItem(
 					new UIBarButtonItem(UIBarButtonSystemItem.Cancel, (sender,args) => {
 						previewLayer.RemoveFromSuperLayer();
-						this.NavigationItem.RightBarButtonItem = null;
+						ResetNavigation();
 						session.StopRunning();
 					})
 					, true);
@@ -89,6 +96,8 @@ namespace App
 
 		private bool ShouldLoad (UIWebView webView, NSUrlRequest request, UIWebViewNavigationType navigationType)
 		{
+			ResetNavigation ();
+
 			if (request.Url.Scheme == "js-call") {
 				HandleJSCall (request.Url.AbsoluteString);
 				return false;
@@ -107,6 +116,8 @@ namespace App
 
 		private void StartScan (Action<string> callback)
 		{
+			_webView.ScrollView.UserInteractionEnabled = false;
+
 			session = new AVCaptureSession ();
 			var camera = AVCaptureDevice.DefaultDeviceWithMediaType (AVMediaType.Video);
 			var input = AVCaptureDeviceInput.FromDevice (camera);
@@ -145,6 +156,7 @@ namespace App
 				counter++;
 
 				session.StopRunning ();
+				_webView.ScrollView.UserInteractionEnabled = true;
 				previewLayer.RemoveFromSuperLayer();
 				this.NavigationItem.RightBarButtonItem = null;
 				callback (result);
