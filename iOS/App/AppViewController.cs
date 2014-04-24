@@ -83,13 +83,12 @@ namespace App
 		{
 			base.ViewWillAppear (animated);
 
+			_webView.Frame = View.Bounds;
 			counter = 0;
 		}
 
 		private bool ShouldLoad (UIWebView webView, NSUrlRequest request, UIWebViewNavigationType navigationType)
 		{
-
-
 			if (request.Url.Scheme == "js-call") {
 				HandleJSCall (request.Url.AbsoluteString);
 				return false;
@@ -97,7 +96,6 @@ namespace App
 
 			if (request.Url.AbsoluteString.EndsWith(".pdf")) {
 				var fileName = Path.GetFileName (request.Url.AbsoluteString);
-				NavigationController.SetNavigationBarHidden (false, true);
 				Title = fileName;
 				NavigationItem.SetLeftBarButtonItem(new UIBarButtonItem ("Back", UIBarButtonItemStyle.Plain, (sender, args) => {
 					_webView.GoBack();
