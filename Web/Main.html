@@ -68,18 +68,16 @@
 
     <script>
     	var api = {};
-
-  			api.scan = function(callback) {
-	         	window.location = 'js-call:scan';
-	         	api.scanComplete = callback;
-	          };
-	        api.popup = function(text) {
-	            window.location = 'js-call:alert?' + encodeURIComponent(text);
-	          };
+		api.scanComplete = function() {};
+		api.scan = function(callback) {
+         	window.location = 'js-call:scan';
+         	api.scanComplete = callback;
+          };
+        api.popup = function(text) {
+            window.location = 'js-call:popup?' + encodeURIComponent(text);
+          };
 
   		$(function() {
-
-
 			$('#btnPopup').click(function() {
           		api.popup($('#txtAlert').val());
 			});
